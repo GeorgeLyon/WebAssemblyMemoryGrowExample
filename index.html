@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<script type="module">
+    async function init() {
+        var checkpoint = 0;
+        var importObject = {
+            env: {
+                set_checkpoint: value => {
+                    console.log(`Updating checkpoint to: ${value}`)
+                    checkpoint = value
+                },
+            }
+        }
+        fetch('write_value_at.wasm').then(response =>
+            response.arrayBuffer()
+        ).then(bytes =>
+            WebAssembly.instantiate(bytes, importObject)
+        ).then(result => {
+            var ref = 268566528
+            console.log(`Completed with return value ${result.instance.exports.write_value_at(ref)}`)
+            console.log(`Value at ref: ${new Uint8Array(result.instance.exports.memory.buffer)[ref]}`)
+        })
+    }
+    init()
+</script>
